@@ -23,8 +23,8 @@ Solana Tic Tac Toe is a decentralized application (dApp) running on the Solana b
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/dskydiver/tic-tac-toe.git
-   cd tic-tac-toe
+   git clone https://github.com/dskydiver/tic_tac_toe.git
+   cd tic_tac_toe
    ```
 
 2. **Install Dependencies**

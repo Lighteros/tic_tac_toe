@@ -11,18 +11,26 @@ declare_id!("7t4yFy9tzfAM3uWeuRC1Fh6QGRyKToyQGZdj7uAZ9XeB");
 pub mod tic_tac_toe {
     use super::*;
 
-    pub fn initialize_game(ctx: Context<InitializeGame>) -> Result<()> {
-        instructions::initialize_game(ctx)
+    pub fn initialize_game(ctx: Context<InitializeGame>, game_number: u64) -> Result<()> {
+        instructions::initialize_game(ctx, game_number)
     }
-    pub fn join_game(ctx: Context<JoinGame>, initiator: Pubkey) -> Result<()> {
+    pub fn join_game(ctx: Context<JoinGame>, initiator: Pubkey, game_number: u64) -> Result<()> {
         // Initiator is used as a seed for PDA derivation and validation, hence not directly referenced.
         let _ = initiator;
+        _ = game_number;
         instructions::join_game(ctx)
     }
 
-    pub fn make_move(ctx: Context<MakeMove>, initiator: Pubkey, column: u8, row: u8) -> Result<()> {
+    pub fn make_move(
+        ctx: Context<MakeMove>,
+        initiator: Pubkey,
+        game_number: u64,
+        column: u8,
+        row: u8,
+    ) -> Result<()> {
         // Initiator is used as a seed for PDA derivation and validation, hence not directly referenced.
         let _ = initiator;
+        _ = game_number;
         instructions::make_move(ctx, column, row)
     }
 }

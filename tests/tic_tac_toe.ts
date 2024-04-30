@@ -12,6 +12,13 @@ describe('tic_tac_toe', () => {
   const initiator = anchor.web3.Keypair.generate()
   let player = anchor.web3.Keypair.generate()
 
+  async function fetchOpenGames() {
+    const games = await program.account.game.all()
+    return games.filter(
+      (game) => JSON.stringify(game.account.status.open) === '{}'
+    )
+  }
+
   before(async () => {
     await anchor
       .getProvider()
@@ -32,28 +39,35 @@ describe('tic_tac_toe', () => {
   })
 
   it('Initialize game', async () => {
+    const buffer = Buffer.alloc(8)
+    buffer.writeBigInt64LE(BigInt('0'))
     const [game] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from('game'), initiator.publicKey.toBuffer()],
+      [Buffer.from('game'), initiator.publicKey.toBuffer(), buffer],
       program.programId
     )
     const tx = await program.methods
-      .initializeGame()
+      .initializeGame(new anchor.BN('0'))
       .accounts({
         initiator: initiator.publicKey,
       })
       .signers([initiator])
       .rpc()
-    const gameData = await program.account.game.fetch(game)
+    const openGames = await fetchOpenGames()
+    expect(openGames.length).to.be.eq(1)
+    expect(openGames[0].publicKey.toBase58()).to.be.eq(game.toBase58())
+    const gameData = await program.account.game.fetch(openGames[0].publicKey)
     expect(gameData.initiator).to.eql(initiator.publicKey)
   })
 
   it('Join game', async () => {
+    const buffer = Buffer.alloc(8)
+    buffer.writeBigInt64LE(BigInt('0'))
     const [game] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from('game'), initiator.publicKey.toBuffer()],
+      [Buffer.from('game'), initiator.publicKey.toBuffer(), buffer],
       program.programId
     )
     const tx = await program.methods
-      .joinGame(initiator.publicKey)
+      .joinGame(initiator.publicKey, new anchor.BN('0'))
       .accounts({
         player: player.publicKey,
       })
@@ -67,13 +81,15 @@ describe('tic_tac_toe', () => {
   })
 
   it("Can't join already started game", async () => {
+    const buffer = Buffer.alloc(8)
+    buffer.writeBigInt64LE(BigInt('0'))
     const [game] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from('game'), initiator.publicKey.toBuffer()],
+      [Buffer.from('game'), initiator.publicKey.toBuffer(), buffer],
       program.programId
     )
     try {
       await program.methods
-        .joinGame(initiator.publicKey)
+        .joinGame(initiator.publicKey, new anchor.BN('0'))
         .accounts({
           player: player.publicKey,
         })
@@ -85,14 +101,16 @@ describe('tic_tac_toe', () => {
   })
 
   it('Make move', async () => {
+    const buffer = Buffer.alloc(8)
+    buffer.writeBigInt64LE(BigInt('0'))
     const [game] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from('game'), initiator.publicKey.toBuffer()],
+      [Buffer.from('game'), initiator.publicKey.toBuffer(), buffer],
       program.programId
     )
     let gameData = await program.account.game.fetch(game)
     let turn = gameData.playerX
     const tx = await program.methods
-      .makeMove(initiator.publicKey, 0, 0)
+      .makeMove(initiator.publicKey, new anchor.BN('0'), 0, 0)
       .accounts({
         player: turn,
       })
@@ -105,15 +123,17 @@ describe('tic_tac_toe', () => {
   })
 
   it("Can't make move if it's already taken", async () => {
+    const buffer = Buffer.alloc(8)
+    buffer.writeBigInt64LE(BigInt('0'))
     const [game] = anchor.web3.PublicKey.findProgramAddressSync(
-      [Buffer.from('game'), initiator.publicKey.toBuffer()],
+      [Buffer.from('game'), initiator.publicKey.toBuffer(), buffer],
       program.programId
     )
     let gameData = await program.account.game.fetch(game)
     let turn = gameData.playerO
     try {
       await program.methods
-        .makeMove(initiator.publicKey, 0, 0)
+        .makeMove(initiator.publicKey, new anchor.BN('0'), 0, 0)
         .accounts({
           player: turn,
         })

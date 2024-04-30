@@ -6,10 +6,10 @@ pub fn join_game(ctx: Context<JoinGame>) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(initiator: Pubkey)]
+#[instruction(initiator: Pubkey, game_number: u64)]
 pub struct JoinGame<'info> {
     #[account(mut)]
     pub player: Signer<'info>,
-    #[account(mut, seeds = [b"game", initiator.key().as_ref()], bump, constraint = game.initiator == initiator.key())]
+    #[account(mut, seeds = [b"game", initiator.key().as_ref(), game_number.to_le_bytes().as_ref()], bump, constraint = game.initiator == initiator.key())]
     pub game: Account<'info, Game>,
 }

@@ -8,10 +8,10 @@ pub fn make_move(ctx: Context<MakeMove>, column: u8, row: u8) -> Result<()> {
 }
 
 #[derive(Accounts)]
-#[instruction(initiator: Pubkey)]
+#[instruction(initiator: Pubkey, game_number: u64)]
 pub struct MakeMove<'info> {
     #[account(mut)]
     pub player: Signer<'info>,
-    #[account(mut, seeds = [b"game", initiator.key().as_ref()], bump, constraint = game.initiator == initiator.key())]
+    #[account(mut, seeds = [b"game", initiator.key().as_ref(), game_number.to_le_bytes().as_ref()], bump, constraint = game.initiator == initiator.key())]
     pub game: Account<'info, Game>,
 }

@@ -9,6 +9,7 @@ pub struct Game {
     pub player_x: Pubkey,        // 32
     pub current_turn: Sign,      // 1
     pub initiator: Pubkey,       // 32
+    pub game_number: u64,        // 8
     pub game_result: GameResult, // 1
 }
 
@@ -35,15 +36,16 @@ pub enum Sign {
 }
 
 impl Game {
-    pub const MAXIMUM_SIZE: usize = 9 + 1 + 32 + 32 + 1 + 32 + 1;
+    pub const MAXIMUM_SIZE: usize = 9 + 1 + 32 + 32 + 1 + 32 + 8 + 1;
 
-    pub fn initialize_game(&mut self, initiator: Pubkey) -> Result<()> {
+    pub fn initialize_game(&mut self, initiator: Pubkey, game_number: u64) -> Result<()> {
         self.board = [[Sign::Empty; 3]; 3];
         self.status = GameState::Open;
         self.player_o = Pubkey::default();
         self.player_x = Pubkey::default();
         self.current_turn = Sign::Empty;
         self.initiator = initiator;
+        self.game_number = game_number;
         self.game_result = GameResult::InProgress;
         Ok(())
     }
