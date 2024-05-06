@@ -78,6 +78,10 @@ impl Game {
             self.status == GameState::InProgress,
             TicTacToeError::GameNotInProgress
         );
+
+        require!(row < 3, TicTacToeError::RowOutOfBounds);
+        require!(col < 3, TicTacToeError::ColumnOutOfBounds);
+
         let current_player = if self.player_x == player {
             require!(self.current_turn == Sign::X, TicTacToeError::NotPlayersTurn);
             Sign::X

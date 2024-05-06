@@ -8,4 +8,6 @@ pub enum TicTacToeError {
     InvalidPlayer,
     GameNotInProgress,
     CellAlreadyTaken,
+    RowOutOfBounds,
+    ColumnOutOfBounds,
 }
